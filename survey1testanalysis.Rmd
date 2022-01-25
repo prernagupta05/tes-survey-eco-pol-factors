@@ -17,7 +17,6 @@ print (survey1)
 
 ```{r, eval =TRUE}
 
-
 library(dplyr)
 library(hablar)
 
@@ -62,15 +61,20 @@ survey1 %>%
                                                                . == "Strongly agree" ~ 1))) %>%
 
 # code eco-pol scale variables into numbers
-  mutate_at(vars(SYSTEMDEMO,SYSTEMRELIGION,SYSTEMTECHNO,SYSTEMTOTAL,WEALTHLIM,MECHANISATION,), funs(case_when(. == "Strongly disagree" ~ 1, 
-                                                               . == "Somewhat disagree" ~ 2,
-                                                               . == "Neither agree nor disagree" ~3,
-                                                               . == "Somewhat agree" ~ 4,
-                                                               . == "Strongly agree" ~ 5)))
+  mutate_at(vars(SYSTEMDEMO,SYSTEMRELIGION,SYSTEMTECHNO,SYSTEMTOTAL,WEALTHLIM,MECHANISATION,DECISIONDECEN,INDUSTRYLARGE,ECONOMYGLOBAL,OWNERPVT,OWNERNOREG), funs(case_when(. == "Strongly disagree" ~ 1, 
+                        . == "Somewhat disagree" ~ 2,
+                        . == "Neither agree nor disagree" ~3,
+                        . == "Somewhat agree" ~ 4,
+                        . == "Strongly agree" ~ 5))) %>%
 
-
-  
-  
+# reverse code eco-pol scale variables into numbers 
+ mutate_at(vars(DECISIONCEN, INDUSTRYSMALL, ECONOMYLOCAL, ENVOVERDEV,OWNERPUB, OWNERREG), funs(case_when(. == "Strongly disagree" ~ 5, 
+                                                                                                         . == "Somewhat disagree" ~ 4,
+                                                                                                         . == "Neither agree nor disagree" ~3,
+                                                                                                         . == "Somewhat agree" ~ 2,
+                                                                                                         . == "Strongly agree" ~ 1))) 
+ 
+#change other variables - figure out if there is need to reverse code, change character variable to numeric ones, change age to ordinal variables
   
   
   
