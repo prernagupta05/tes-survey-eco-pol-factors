@@ -16,74 +16,70 @@ print (survey1)
 
 
 ```{r, eval =TRUE}
-survey1[-c(1),] # remove row 1
-library(dplyr)
 
-# replacing risky likert scales with numbers
+
+library(dplyr)
+library(hablar)
 
 survey1 %>%
-  mutate(Risky_Hydro=case_when(Risky_Hydro =="Not at all risky" ~ 1, Risky_Hydro =="Slightly risky" ~ 2, Risky_Hydro =="Moderately risky" ~ 3, Risky_Hydro =="Very risky" ~ 4, Risky_Hydro =="Extremely risky" ~ 5)) %>% 
   
-  mutate(Risky_Solar=case_when(Risky_Solar =="Not at all risky" ~ 1, Risky_Solar =="Slightly risky" ~ 2, Risky_Solar =="Moderately risky" ~ 3, Risky_Solar =="Very risky" ~ 4, Risky_Solar =="Extremely risky" ~ 5)) %>%
+#remove row 1
+  filter(!row_number() %in% c(1)) %>% 
+  
+# replace risky likert scale with numbers
+  mutate_at(vars(starts_with("Risky")), funs(case_when(. =="Not at all risky" ~ 1, 
+                                                       . =="Slightly risky" ~ 2, 
+                                                       . =="Moderately risky" ~ 3, 
+                                                       . =="Very risky" ~ 4, 
+                                                       . =="Extremely risky" ~ 5))) %>%
 
-  mutate(Risky_Gas=case_when(Risky_Gas =="Not at all risky" ~ 1, Risky_Gas =="Slightly risky" ~ 2, Risky_Gas =="Moderately risky" ~ 3, Risky_Gas =="Very risky" ~ 4, Risky_Gas =="Extremely risky" ~ 5))%>%
-  
-  mutate(Risky_Wind=case_when(Risky_Wind =="Not at all risky" ~ 1, Risky_Wind =="Slightly risky" ~ 2, Risky_Wind =="Moderately risky" ~ 3, Risky_Wind =="Very risky" ~ 4, Risky_Wind =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_Nuclear=case_when(Risky_Nuclear =="Not at all risky" ~ 1, Risky_Nuclear =="Slightly risky" ~ 2, Risky_Nuclear =="Moderately risky" ~ 3, Risky_Nuclear =="Very risky" ~ 4, Risky_Nuclear =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_Coal=case_when(Risky_Coal =="Not at all risky" ~ 1, Risky_Coal =="Slightly risky" ~ 2, Risky_Coal =="Moderately risky" ~ 3, Risky_Coal =="Very risky" ~ 4, Risky_Coal =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_Oil=case_when(Risky_Oil =="Not at all risky" ~ 1, Risky_Oil =="Slightly risky" ~ 2, Risky_Oil =="Moderately risky" ~ 3, Risky_Oil =="Very risky" ~ 4, Risky_Oil =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDHydro=case_when(Risky_INDHydro =="Not at all risky" ~ 1, Risky_INDHydro =="Slightly risky" ~ 2, Risky_INDHydro =="Moderately risky" ~ 3, Risky_INDHydro =="Very risky" ~ 4, Risky_INDHydro =="Extremely risky" ~ 5)) %>%
-    
-    mutate(Risky_INDSolar=case_when(Risky_INDSolar =="Not at all risky" ~ 1, Risky_INDSolar =="Slightly risky" ~ 2, Risky_INDSolar =="Moderately risky" ~ 3, Risky_INDSolar =="Very risky" ~ 4, Risky_INDSolar =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDWind=case_when(Risky_INDWind =="Not at all risky" ~ 1, Risky_INDWind =="Slightly risky" ~ 2, Risky_INDWind =="Moderately risky" ~ 3, Risky_INDWind =="Very risky" ~ 4, Risky_INDWind =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDBiogas=case_when(Risky_INDBiogas =="Not at all risky" ~ 1, Risky_INDBiogas =="Slightly risky" ~ 2, Risky_INDBiogas =="Moderately risky" ~ 3, Risky_INDBiogas =="Very risky" ~ 4, Risky_INDBiogas =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDDiesel=case_when(Risky_INDDiesel =="Not at all risky" ~ 1, Risky_INDDiesel =="Slightly risky" ~ 2, Risky_INDDiesel =="Moderately risky" ~ 3, Risky_INDDiesel =="Very risky" ~ 4, Risky_INDDiesel =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDKerosene=case_when(Risky_INDKerosene =="Not at all risky" ~ 1, Risky_INDKerosene =="Slightly risky" ~ 2, Risky_INDKerosene =="Moderately risky" ~ 3, Risky_INDKerosene =="Very risky" ~ 4, Risky_INDKerosene =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDFirewoodetc=case_when(Risky_INDFirewoodetc =="Not at all risky" ~ 1, Risky_INDFirewoodetc =="Slightly risky" ~ 2, Risky_INDFirewoodetc =="Moderately risky" ~ 3, Risky_INDFirewoodetc =="Very risky" ~ 4, Risky_INDFirewoodetc =="Extremely risky" ~ 5)) %>%
-  
-    mutate(Risky_INDLPG=case_when(Risky_INDLPG =="Not at all risky" ~ 1, Risky_INDLPG =="Slightly risky" ~ 2, Risky_INDLPG =="Moderately risky" ~ 3, Risky_INDLPG =="Very risky" ~ 4, Risky_INDLPG =="Extremely risky" ~ 5)) %>%
+# replace beneficial likert scale with numbers  
+  mutate_at(vars(starts_with("Ben")), funs(case_when(. =="Not at all beneficial" ~ 1,
+                                                     . =="Slightly beneficial" ~ 2,
+                                                     . =="Moderately beneficial" ~ 3,
+                                                     . =="Very beneficial" ~ 4,
+                                                     . =="Extremely beneficial" ~ 5 ))) %>%
 
-#replacing beneficial likert scale with numbers
+# replace nuclear acceptance likert scale with numbers
+  mutate_at(vars(N_accept,N_reluctantlyaccept,N_reject), funs(case_when(. == "Strongly disagree" ~ 1, 
+                                                                        . == "Somewhat disagree" ~ 2,
+                                                                        . == "Neither agree nor disagree" ~3,
+                                                                        . == "Somewhat agree" ~ 4,
+                                                                        . == "Strongly agree" ~ 5))) %>%
   
-  mutate(Ben_Hydro=case_when(Ben_Hydro =="Not at all beneficial" ~ 1, Ben_Hydro =="Slightly beneficial" ~ 2, Ben_Hydro =="Moderately beneficial" ~ 3, Ben_Hydro =="Very beneficial" ~ 4, Ben_Hydro =="Extremely beneficial" ~ 5)) %>%
+# code likert scale for variables for Kahan scale into numbers
+  mutate_at(vars(starts_with (c("K_I","K_H","DISPLACE", "POLLUTE", "HEALTH", "JOBS", "BEAUTY", "PRIDE", "NPRIDE", "DEV", "PROSPER", "RELY"))), funs(case_when(. == "Strongly disagree" ~ 1, 
+                                                               . == "Somewhat disagree" ~ 2,
+                                                               . == "Neither agree nor disagree" ~3,
+                                                               . == "Somewhat agree" ~ 4,
+                                                               . == "Strongly agree" ~ 5))) %>%
+  
+# reverse code for likert scale for variables for Kahan scale into numbers
+  mutate_at(vars(starts_with (c("K_S","K_E"))), funs(case_when(. == "Strongly disagree" ~ 5, 
+                                                               . == "Somewhat disagree" ~ 4,
+                                                               . == "Neither agree nor disagree" ~3,
+                                                               . == "Somewhat agree" ~ 2,
+                                                               . == "Strongly agree" ~ 1))) %>%
 
-  mutate(Ben_Solar=case_when(Ben_Solar =="Not at all beneficial" ~ 1, Ben_Solar =="Slightly beneficial" ~ 2, Ben_Solar =="Moderately beneficial" ~ 3, Ben_Solar =="Very beneficial" ~ 4, Ben_Solar =="Extremely beneficial" ~ 5)) %>%
-  
-    mutate(Ben_Wind=case_when(Ben_Wind =="Not at all beneficial" ~ 1, Ben_Wind =="Slightly beneficial" ~ 2, Ben_Wind =="Moderately beneficial" ~ 3, Ben_Wind =="Very beneficial" ~ 4, Ben_Wind =="Extremely beneficial" ~ 5)) %>%
-  
-    mutate(Ben_Nuclear=case_when(Ben_Nuclear =="Not at all beneficial" ~ 1, Ben_Nuclear =="Slightly beneficial" ~ 2, Ben_Nuclear =="Moderately beneficial" ~ 3, Ben_Nuclear =="Very beneficial" ~ 4, Ben_Nuclear =="Extremely beneficial" ~ 5)) %>% 
-  
-    mutate(Ben_Coal=case_when(Ben_Coal =="Not at all beneficial" ~ 1, Ben_Coal =="Slightly beneficial" ~ 2, Ben_Coal =="Moderately beneficial" ~ 3, Ben_Coal =="Very beneficial" ~ 4, Ben_Coal =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_Oil=case_when(Ben_Oil =="Not at all beneficial" ~ 1, Ben_Oil =="Slightly beneficial" ~ 2, Ben_Oil =="Moderately beneficial" ~ 3, Ben_Oil =="Very beneficial" ~ 4, Ben_Oil =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDHydro=case_when(Ben_INDHydro =="Not at all beneficial" ~ 1, Ben_INDHydro =="Slightly beneficial" ~ 2, Ben_INDHydro =="Moderately beneficial" ~ 3, Ben_INDHydro =="Very beneficial" ~ 4, Ben_INDHydro =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDSolar=case_when(Ben_INDSolar =="Not at all beneficial" ~ 1, Ben_INDSolar =="Slightly beneficial" ~ 2, Ben_INDSolar =="Moderately beneficial" ~ 3, Ben_INDSolar =="Very beneficial" ~ 4, Ben_INDSolar =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDWind=case_when(Ben_INDWind =="Not at all beneficial" ~ 1, Ben_INDWind =="Slightly beneficial" ~ 2, Ben_INDWind =="Moderately beneficial" ~ 3, Ben_INDWind =="Very beneficial" ~ 4, Ben_INDWind =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDBiogas=case_when(Ben_INDBiogas =="Not at all beneficial" ~ 1, Ben_INDBiogas =="Slightly beneficial" ~ 2, Ben_INDBiogas =="Moderately beneficial" ~ 3, Ben_INDBiogas =="Very beneficial" ~ 4, Ben_INDBiogas =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDDiesel=case_when(Ben_INDDiesel =="Not at all beneficial" ~ 1, Ben_INDDiesel =="Slightly beneficial" ~ 2, Ben_INDDiesel =="Moderately beneficial" ~ 3, Ben_INDDiesel =="Very beneficial" ~ 4, Ben_INDDiesel =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDKerosene=case_when(Ben_INDKerosene =="Not at all beneficial" ~ 1, Ben_INDKerosene =="Slightly beneficial" ~ 2, Ben_INDKerosene =="Moderately beneficial" ~ 3, Ben_INDKerosene =="Very beneficial" ~ 4, Ben_INDKerosene =="Extremely beneficial" ~ 5)) %>% 
-  mutate(Ben_INDFirewoodetc=case_when(Ben_INDFirewoodetc =="Not at all beneficial" ~ 1, Ben_INDFirewoodetc =="Slightly beneficial" ~ 2, Ben_INDFirewoodetc =="Moderately beneficial" ~ 3, Ben_INDFirewoodetc =="Very beneficial" ~ 4, Ben_INDFirewoodetc =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_INDLPG=case_when(Ben_INDLPG =="Not at all beneficial" ~ 1, Ben_INDLPG =="Slightly beneficial" ~ 2, Ben_INDLPG =="Moderately beneficial" ~ 3, Ben_INDLPG =="Very beneficial" ~ 4, Ben_INDLPG =="Extremely beneficial" ~ 5)) %>%
-  mutate(Ben_Gas=case_when(Ben_Gas =="Not at all beneficial" ~ 1, Ben_Gas =="Slightly beneficial" ~ 2, Ben_Gas =="Moderately beneficial" ~ 3, Ben_Gas =="Very beneficial" ~ 4, Ben_Gas =="Extremely beneficial" ~ 5)) 
+# code eco-pol scale variables into numbers
+  mutate_at(vars(SYSTEMDEMO,SYSTEMRELIGION,SYSTEMTECHNO,SYSTEMTOTAL,WEALTHLIM,MECHANISATION,), funs(case_when(. == "Strongly disagree" ~ 1, 
+                                                               . == "Somewhat disagree" ~ 2,
+                                                               . == "Neither agree nor disagree" ~3,
+                                                               . == "Somewhat agree" ~ 4,
+                                                               . == "Strongly agree" ~ 5)))
+
 
   
   
-
+  
+  
   
   
 ```
 
 
 ```{r, eval =TRUE}
-
+ 
 
 ```
 
