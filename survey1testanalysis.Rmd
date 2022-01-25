@@ -1,27 +1,30 @@
 ---
 title: "eco_pol_test_anaylsis"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
+    theme: paper
 ---
-```{r, eval=TRUE}
-surveyone <- read.csv( "~/Desktop/Political_factors_Jan9.csv" , sep=",")
-survey1 <- data.frame(surveyone)
-print (survey1)
-# loaded data set for survey one
+
+```{r load packages, warning = FALSE, message = FALSE}
+library(gapminder)
+library(tidyverse)
+library(hablar)
+library(tsibble)
 ```
 
-```{r, eval =TRUE}
 
-
+```{r}
+surveyone <- read.csv( "~/Desktop/Political_factors_Jan9.csv" , sep=",")
+survey1 <- data.frame(surveyone)
+  DT::datatable(survey1)
+# loaded data set for survey one
 ```
 
 
 ```{r, eval =TRUE}
 
 #This chunk contains the coding schemes of various scales used in survey one: eco-political factors, kahan scale and acceptance scale
-
-library(dplyr)
-library(hablar)
-
 codedsurvey1 <- survey1 %>%
   
 #remove row 1
@@ -74,9 +77,9 @@ codedsurvey1 <- survey1 %>%
                                                                                                          . == "Somewhat disagree" ~ 4,
                                                                                                          . == "Neither agree nor disagree" ~3,
                                                                                                          . == "Somewhat agree" ~ 2,
-                                                                                                         . == "Strongly agree" ~ 1)))
-
-#change age to ordinal variables
+                                                                                                         . == "Strongly agree" ~ 1))) 
+DT::datatable(head(codedsurvey1), class= 'cell-border stripe')
+#change age to ordinal variables and wrap as tibble? more accessible on html format
   
   
   
@@ -84,12 +87,13 @@ codedsurvey1 <- survey1 %>%
 ```
 
 
+
 ```{r, eval =TRUE}
 
 codedsurvey1 %>%
   summarize_at(vars(starts_with(c("RISKY","BEN"))), list(~mean(., na.rm = TRUE), ~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE), ~n()))
   
-#figure out how to arrange by technology names 
+#figure out how to arrange by technology names,
   
   
 
