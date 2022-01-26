@@ -11,12 +11,14 @@ library(gapminder)
 library(tidyverse)
 library(hablar)
 library(tsibble)
+library(dplyr)
 ```
 
 
 ```{r}
 surveyone <- read.csv( "~/Desktop/Political_factors_Jan9.csv" , sep=",")
 survey1 <- data.frame(surveyone)
+survey1 %>%
   DT::datatable(survey1)
 # loaded data set for survey one
 ```
@@ -89,14 +91,45 @@ DT::datatable(head(codedsurvey1), class= 'cell-border stripe')
 
 
 ```{r, eval =TRUE}
-
 codedsurvey1 %>%
-  summarize_at(vars(starts_with(c("RISKY","BEN"))), list(~mean(., na.rm = TRUE), ~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE), ~n()))
-  
-#figure out how to arrange by technology names,
-  
-  
+  summarize_at(vars(starts_with(c("RISKY"))), list(~mean(., na.rm = TRUE), ~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE), ~n())) %>%
+  #add row index so later spreading indexed correctly
+  add_rownames()%>%
+  #melt to long format
+  gather(technology, value, -rowname) %>%
+  # separate risky from variable suffix
+  separate(technology, c("Risky", "var"), extra = "merge", fill = "left") %>%
+  #separate mean from variable prefix
+  separate(var, c("technology", "summary")) %>%
+  # spread summary values back to wide form
+  spread(summary,value) %>%
+  #clean up
+  select(-rowname, -Risky) %>%
+  arrange(mean)
 
+#round off to two decimal places
 ```
+
+
+```{r, eval =TRUE}
+codedsurvey1 %>%
+  summarize_at(vars(starts_with(c("Ben"))), list(~mean(., na.rm = TRUE), ~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE), ~n())) %>%
+  #add row index so later spreading indexed correctly
+  add_rownames()%>%
+  #melt to long format
+  gather(technology, value, -rowname) %>%
+  # separate risky from variable suffix
+  separate(technology, c("Ben", "var"), extra = "merge", fill = "left") %>%
+  #separate mean from variable prefix
+  separate(var, c("technology", "summary")) %>%
+  # spread summary values back to wide form
+  spread(summary,value) %>%
+  #clean up
+  select(-rowname, -Ben) %>%
+  arrange(mean)
+
+#round off to two decimal places
+```
+
 
 
