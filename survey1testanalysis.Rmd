@@ -2,24 +2,32 @@
 title: "eco_pol_test_anaylsis"
 output: 
   html_document:
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
     keep_md: true
     theme: paper
+    df_print: paged
 ---
 
 ```{r load packages, warning = FALSE, message = FALSE}
-library(gapminder)
-library(tidyverse)
-library(hablar)
-library(tsibble)
-library(dplyr)
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(hablar))
+suppressPackageStartupMessages(library(tsibble))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(ggplot2))
+
 ```
 
 
 ```{r}
+
 surveyone <- read.csv( "~/Desktop/Political_factors_Jan9.csv" , sep=",")
 survey1 <- data.frame(surveyone)
 survey1 %>%
-  DT::datatable(survey1)
+  filter(!row_number() %in% c(1))
+
 # loaded data set for survey one
 ```
 
@@ -75,13 +83,13 @@ codedsurvey1 <- survey1 %>%
                         . == "Strongly agree" ~ 5))) %>%
 
 # reverse code eco-pol scale variables into numbers 
- mutate_at(vars(DECISIONCEN, INDUSTRYSMALL, ECONOMYLOCAL, ENVOVERDEV,OWNERPUB, OWNERREG), funs(case_when(. == "Strongly disagree" ~ 5, 
-                                                                                                         . == "Somewhat disagree" ~ 4,
+ mutate_at(vars(DECISIONCEN, INDUSTRYSMALL, ECONOMYLOCAL, ENVOVERDEV,OWNERPUB, OWNERREG), funs(case_when(. == "Strongly disagree" ~ 1, 
+                                                                                                         . == "Somewhat disagree" ~ 2,
                                                                                                          . == "Neither agree nor disagree" ~3,
-                                                                                                         . == "Somewhat agree" ~ 2,
-                                                                                                         . == "Strongly agree" ~ 1))) 
-DT::datatable(head(codedsurvey1), class= 'cell-border stripe')
-#change age to ordinal variables and wrap as tibble? more accessible on html format
+                                                                                                         . == "Somewhat agree" ~ 4,
+                                                                                                         . == "Strongly agree" ~ 5)))
+ 
+#change age to ordinal variables. 
   
   
   
@@ -112,13 +120,14 @@ codedsurvey1 %>%
 
 
 ```{r, eval =TRUE}
+
 codedsurvey1 %>%
   summarize_at(vars(starts_with(c("Ben"))), list(~mean(., na.rm = TRUE), ~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE), ~n())) %>%
   #add row index so later spreading indexed correctly
   add_rownames()%>%
   #melt to long format
   gather(technology, value, -rowname) %>%
-  # separate risky from variable suffix
+  # separate Ben from variable suffix
   separate(technology, c("Ben", "var"), extra = "merge", fill = "left") %>%
   #separate mean from variable prefix
   separate(var, c("technology", "summary")) %>%
@@ -131,5 +140,55 @@ codedsurvey1 %>%
 #round off to two decimal places
 ```
 
+```{r}
+#summary statistics for nuclear energy accept, reject and reluctantly accept scale
+codedsurvey1 %>%
+  summarize_at(vars(N_accept,N_reject,N_reluctantlyaccept), list(~mean(., na.rm = TRUE),~median(., na.rm = TRUE), ~sd(.,na.rm = TRUE),~var(.,na.rm = TRUE),~n())) %>%
+  add_rownames() %>%
+  gather(acceptance, value, -rowname) %>%
+  separate(acceptance, c("N_accept", "var") ,  extra = "merge", fill = "left") %>%
+  separate(var, c("Acceptance", "summary")) %>%
+  spread(summary, value) %>%
+  select(-rowname, -N_accept)%>%
+  arrange(mean)
 
+```
+
+```{r}
+ecopolvariables <- codedsurvey1 %>%
+  select(DECISIONDECEN:MECHANISATION) %>%
+  na.omit() 
+  
+ecopolvar.pca <- prcomp(ecopolvariables, center= TRUE, scale = TRUE)
+
+ecopolvar.pca
+
+
+```
+
+
+```{r}
+
+summary(ecopolvar.pca)
+```
+
+```{r}
+library("factoextra")
+eig.val <- get_eigenvalue(ecopolvar.pca)
+eig.val
+```
+```{r}
+
+fviz_eig(ecopolvar.pca, addlabels = TRUE, ylim = c(0, 50))
+
+```
+```{r}
+library(psych)
+
+ecopolvariables %>%
+  select()
+alpha(ecopolvariables)
+
+# NA is removing entire rows from the data set, figure how to remove separately from each column
+```
 
